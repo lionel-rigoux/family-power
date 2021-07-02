@@ -2,17 +2,17 @@ function result = family_power ()
  
 options = VBA_factorial_struct ( ...
     'size_families', {[3 5]}, ...
-    'model_prob_winner', 0.9,   ...
-    'model_prob_noise', 0.02,   ...
+    'model_prob_winner', 0.8,   ...
+    'model_prob_noise', 0.03,   ...
     'freq_family_A', (0 : 6) / 6, ...
-    'n_subject', 12, ...
-    'n_simulation', 10 ...
+    'n_subject', 12 : 12 : 24, ...
+    'n_simulation', 30 ...
     );
  
 result = [];
 for i = 1 : numel (options)
     option = options (i)
-    for j = 1 : options(i).n_simulation
+    parfor j = 1 : options(i).n_simulation
         result = [result; run_simulation(option)];
     end
 end
@@ -46,7 +46,7 @@ function [Ef, xp] = revisit (F, option)
 
 opt.verbose = false;
 opt.DisplayWin = false;
- 
+  
 [posterior, out] = VBA_groupBMC(F, opt);
 
 N = 5e6;
@@ -54,10 +54,14 @@ samples = VBA_random ('Dirichlet', posterior.a, N);
  
 n1 = option.size_families(1);
 n2 = option.size_families(2);
-% uncorrelated model evidence
-familyFreq = VBA_softmax([log(sum(samples(1:n1,:))./sum(samples));log(sum(samples(n1+(1:n2),:))./sum(samples))])';
-% corrleated evidence
-%familyFreq = VBA_softmax([log(mean(samples(1:n1,:))./mean(samples));log(mean(samples(n1+(1:n2),:))./mean(samples))])';
+% todo: change weight for dependent evidences
+% idea: check for corr of the samples (simplicial correlation)
+w1 = 1 ;
+w2 = 1 ;
+mf1 = w1 * sum (samples(1:n1,:));
+mf2 = w2 * sum (samples(n1+(1:n2),:));
+mf = mf1 + mf2;
+familyFreq = VBA_softmax([log(mf1/mf);log(mf2/mf)])';
 
 Ef = compositional_mean(familyFreq);
 xp = mean(familyFreq > 0.5);
@@ -66,7 +70,7 @@ end
  
 function F = generate_group (option)
  
-nA = round(option.n_subject * option.freq_family_A);
+nA = option.n_subject * option.freq_family_A;
  
 for iS = 1 : option.n_subject
     if iS <= nA
