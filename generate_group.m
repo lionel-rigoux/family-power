@@ -12,14 +12,17 @@ for iS = 1 : option.n_subject
     end
     
     modIdx = offset + randi (option.size_families(famIdx));
-    %modIdx = offset + (1 : option.size_families(famIdx));
+    famIdx = setdiff ( ...
+        offset + (1 : option.size_families(famIdx)), ...
+        modIdx ...
+        );
     
     nModel = sum (option.size_families);
 
     logpp = option.model_prob_noise * randn (1, nModel);
     logpp(modIdx) = logpp(modIdx) + option.model_prob_winner;
+    logpp(famIdx) = logpp(modIdx) + option.model_prob_corr * option.model_prob_winner;
     
-
     F(:,iS) = logpp;
 end
 end

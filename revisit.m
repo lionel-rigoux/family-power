@@ -12,8 +12,9 @@ samples = VBA_random ('Dirichlet', posterior.a, N);
 n1 = option.size_families(1);
 n2 = option.size_families(2);
 
-w1 = 1;
-w2 = 1;
+w0 = 0;
+w1 = 1/(1+w0*(n1-1));
+w2 = 1/(1+w0*(n2-1));
 
 mf1 = w1 * sum (samples(1:n1,:));
 mf2 = w2 * sum (samples(n1+(1:n2),:));
