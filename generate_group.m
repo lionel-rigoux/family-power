@@ -1,6 +1,6 @@
 function F = generate_group (option)
  
-nA = option.n_subject * option.freq_family_A;
+nA = option.n_subject * (1 - option.freq_family_B);
  
 for iS = 1 : option.n_subject
     if iS <= nA

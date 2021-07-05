@@ -5,9 +5,9 @@ options = VBA_factorial_struct ( ...
     'model_prob_winner', .5 : 1 : 2.5,   ...
     'model_prob_corr', .3,   ...
     'model_prob_noise', 0.5,   ...
-    'freq_family_A', (1 : 7) / 8, ...
+    'freq_family_B', (1 : 7) / 8, ...
     'n_subject', 16 : 16 : 48, ...
-    'n_simulation', 50 ...
+    'n_simulation', 10 ...
     );
  
 result = [];
@@ -37,15 +37,15 @@ opt.DisplayWin = false;
 result = [option; option];
 
 result(1).type = 'classic';
-result(1).Ef = out.families.Ef(1);
-result(1).xp = out.families.ep(1);
+result(1).Ef = out.families.Ef(2);
+result(1).xp = out.families.ep(2);
 
  
 [revisited_EF, revisited_xp] = revisit (F, option);
  
 result(2).type = 'revisited';
-result(2).Ef = revisited_EF(1);
-result(2).xp = revisited_xp(1);
+result(2).Ef = revisited_EF(2);
+result(2).xp = revisited_xp(2);
 
 end
 

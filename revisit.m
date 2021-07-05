@@ -24,7 +24,8 @@ familyFreq(:,2) = mf2 ./ (mf1 + mf2);
 
 
 Ef = compositional_mean (familyFreq);
-xp = mean (familyFreq >= 0.5);
+xp(1) = mean (familyFreq(:,1) > 0.5);
+xp(2) = mean (familyFreq(:,2) > 0.5);
 xp = xp / sum(xp);
 end
  
