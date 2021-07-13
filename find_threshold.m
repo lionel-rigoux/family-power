@@ -1,28 +1,31 @@
-function [ROC] = find_threshold (t)
+function thr = find_threshold (ROC)
 
-ROC = table();
-t.type = string(t.type);
-type = unique(t.type);
-n_subject = unique(t.n_subject);
-model_prob_winner = unique(t.model_prob_winner);
+thr = table();
+
+ROC.type = string(ROC.type);
+type = unique(ROC.type);
+n_subject = unique(ROC.n_subject);
+model_prob_winner = setdiff(unique(ROC.model_prob_winner),0);
 
 for iS = 1 : numel (n_subject)
-    for iP = 1 : numel (model_prob_winner)
-        for iT = 1 : numel (type)
-            subT = t(t.type == type{iT} & t.n_subject == n_subject(iS) & t.model_prob_winner == model_prob_winner(iP),:);
-            [fpr,tpr,thr,auc] = perfcurve(subT.freq_family_B>.5,subT.xp, true);
+    for iT = 1 : numel (type)
+        for iP = 1 : numel (model_prob_winner)
             
-            n = numel(thr);
+            
+            subROC = ROC(ROC.type == type{iT} & ROC.n_subject == n_subject(iS) & ROC.model_prob_winner == model_prob_winner(iP),:);
+            
+            
+            idLast = find(subROC.fpr<.05,1,'last');
+            ids = idLast + (0:1);
+                 
+            tpr = interp1(subROC.fpr(ids),subROC.tpr(ids),.05);
+            xp0 = interp1(subROC.fpr(ids),subROC.threshold(ids),.05);
+            
+            
             tmp = table( ...
-                string(repmat(type{iT},n,1)), repmat(n_subject(iS),n,1), repmat(model_prob_winner(iP),n,1),thr,fpr,tpr,ones(n,1)*auc, ...
-                'VariableNames', {'type','n_subject','model_prob_winner','threshold','fpr','tpr','auc'});
-            ROC = [ROC;tmp ];
-            
+                string(type{iT}), n_subject(iS), model_prob_winner(iP),tpr,xp0, ...
+                'VariableNames', {'type','n_subject','model_prob_winner','beta','xp0'});
+            thr = [thr;tmp ];
         end
     end
 end
-
-
-end
-
-
