@@ -21,7 +21,7 @@ for iS = 1 : option.n_subject
 
     logpp = option.model_prob_noise * randn (1, nModel);
     logpp(modIdx) = logpp(modIdx) + option.model_prob_winner;
-    logpp(famIdx) = logpp(modIdx) + option.model_prob_corr * option.model_prob_winner;
+    logpp(famIdx) = logpp(famIdx) + option.model_prob_corr * option.model_prob_winner;
     
     F(:,iS) = logpp;
 end
